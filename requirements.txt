@@ -1,0 +1,10 @@
+flask
+google-genai
+pillow
+pytesseract
+speechrecognition
+sentence-transformers
+python-dotenv
+pyaudio
+PyPDF2
+gtts
