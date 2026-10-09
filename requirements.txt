@@ -1,5 +1,4 @@
 flask
-google-genai
 pillow
 pytesseract
 speechrecognition
@@ -12,4 +11,6 @@ truststore
 faiss-cpu
 langchain-community
 langchain-huggingface
-langchain-coregunicorn
+langchain-core
+gunicorn
+deep-translator
