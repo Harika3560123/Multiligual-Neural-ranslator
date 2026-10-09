@@ -12,4 +12,4 @@ truststore
 faiss-cpu
 langchain-community
 langchain-huggingface
-langchain-core
+langchain-coregunicorn
