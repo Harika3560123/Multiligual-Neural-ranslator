@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multilingual Neural Translator</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #081120, #0d1b2a, #111827);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px);
+            border-radius: 24px;
+            padding: 45px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 2.7rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #7c8cff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.72);
+            margin-bottom: 40px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #d8e3ff;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            resize: vertical;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            color: white;
+            padding: 18px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.25);
+        }
+
+        select,
+        input[type="file"] {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        option {
+            background: #0f172a;
+            color: white;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .translate-btn {
+            background: linear-gradient(135deg, #7c8cff, #00d4ff);
+        }
+
+        .voice-btn {
+            background: linear-gradient(135deg, #ff7b54, #ff416c);
+        }
+
+        .pdf-btn {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+        }
+
+        .image-btn {
+            background: linear-gradient(135deg, #6c5ce7, #341f97);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .feature-section {
+            margin-top: 35px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 22px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 12px;
+            color: #d8e3ff;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .output-section {
+            margin-top: 45px;
+        }
+
+        .output-title {
+            margin-bottom: 14px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #d8e3ff;
+        }
+
+        .output-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 22px;
+            min-height: 140px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        @media(max-width: 768px) {
+
+            .container {
+                padding: 28px;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            textarea {
+                min-height: 150px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1 class="title">
+            Multilingual Neural Translator
+        </h1>
+
+        <p class="subtitle">
+            AI-powered multilingual translation system with contextual understanding,
+            OCR extraction, speech translation, PDF processing, and voice output generation.
+        </p>
+
+        <form action="/translate" method="POST" enctype="multipart/form-data">
+
+            <div class="form-section">
+
+                <div class="input-box">
+
+                    <label>Enter Text</label>
+
+                    <textarea
+                        name="text"
+                        placeholder="Type or paste your content here..."></textarea>
+
+                </div>
+
+                <div class="input-box">
+
+                    <label>Select Target Language</label>
+
+                    <select name="language">
+
+                        <option>Telugu</option>
+                        <option>Hindi</option>
+                        <option>Tamil</option>
+                        <option>English</option>
+                        <option>Spanish</option>
+                        <option>French</option>
+                        <option>Assamese</option>
+                        <option>Bengali</option>
+                        <option>Bodo</option>
+                        <option>Dogri</option>
+                        <option>Gujarati</option>
+                        <option>Kannada</option>
+                        <option>Kashmiri</option>
+                        <option>Konkani</option>
+                        <option>Maithili</option>
+                        <option>Malayalam</option>
+                        <option>Manipuri</option>
+                        <option>Marathi</option>
+                        <option>Nepali</option>
+                        <option>Odia</option>
+                        <option>Punjabi</option>
+                        <option>Sanskrit</option>
+                        <option>Santhali</option>
+                        <option>Sindhi</option>
+                        <option>Urdu</option>
+
+                    </select>
+
+                </div>
+
+                <div class="input-box">
+
+                    <label>Upload PDF</label>
+
+                    <input type="file" name="pdf" accept=".pdf">
+
+                </div>
+
+                <div class="input-box">
+
+                    <label>Upload Image</label>
+
+                    <input type="file" name="image" accept="image/*" capture="environment">
+
+                </div>
+
+                <div class="button-grid">
+
+                    <button type="submit" class="translate-btn">
+                        Translate Text
+                    </button>
+
+                    <button type="submit" name="action" value="voice" class="voice-btn">
+                        Voice Input
+                    </button>
+
+                    <button type="submit" name="action" value="pdf" class="pdf-btn">
+                        Translate PDF
+                    </button>
+
+                    <button type="submit" name="action" value="image" class="image-btn">
+                        Translate Image
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+        <div class="feature-section">
+
+            <div class="feature-card">
+                <h3>Speech Recognition</h3>
+                <p>
+                    Convert voice into text and generate multilingual translation instantly.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>OCR Image Translation</h3>
+                <p>
+                    Extract text from uploaded images using intelligent OCR processing.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>PDF Translation</h3>
+                <p>
+                    Upload PDF documents and translate extracted multilingual content.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="output-section">
+
+            <h2 class="output-title">
+                Translation Output
+            </h2>
+
+            <div class="output-box">
+                {{ translated }}
+            </div>
+
+            {% if audio %}
+            <audio controls>
+                <source src="{{ audio }}" type="audio/mpeg">
+            </audio>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,35 +1,25 @@
+try:
+    import truststore
+    truststore.inject_into_ssl()
+except Exception:
+    pass
+
 from rag_engine import retrieve_context
-
 from google import genai
-
 from dotenv import load_dotenv
-
 from PIL import Image
-
 from PyPDF2 import PdfReader
-
 from gtts import gTTS
-
 import speech_recognition as sr
-
 import pytesseract
-
 import os
-
 
 # =====================================================
 # LOAD API KEY
 # =====================================================
 
 load_dotenv()
-
-j = os.getenv("jyo")
-
-
-# =====================================================
-# GEMINI CLIENT
-# =====================================================
-
+j = os.getenv("jyo") or os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=j)
 
 # =====================================================
@@ -37,84 +27,54 @@ client = genai.Client(api_key=j)
 # =====================================================
 
 def extract_text_from_image(image_path):
-
     try:
-
         img = Image.open(image_path)
-
         text = pytesseract.image_to_string(img)
-
-        return text
-
+        return text.strip()
     except Exception as e:
-
         return f"Image Error: {e}"
-
 
 # =====================================================
 # PDF TO TEXT
 # =====================================================
 
 def extract_text_from_pdf(pdf_path):
-
     try:
-
         reader = PdfReader(pdf_path)
-
         text = ""
-
         for page in reader.pages:
-
             extracted = page.extract_text()
-
             if extracted:
-
                 text += extracted + "\n"
-
-        return text
-
+        return text.strip()
     except Exception as e:
-
         return f"PDF Error: {e}"
-
 
 # =====================================================
 # SPEECH TO TEXT
 # =====================================================
 
 def speech_to_text():
-
     recognizer = sr.Recognizer()
-
     try:
-
         with sr.Microphone() as source:
-
             print("Speak Now...")
-
             recognizer.adjust_for_ambient_noise(source)
-
             audio = recognizer.listen(source)
-
         text = recognizer.recognize_google(audio)
-
         return text
-
     except Exception as e:
-
         return f"Speech Error: {e}"
-
 
 # =====================================================
 # TRANSLATION FUNCTION
 # =====================================================
 
 def translate_text(text, language):
-
+    if not text or not text.strip():
+        return ""
     try:
-
         context = retrieve_context(text)
-
         prompt = f"""
 You are an advanced multilingual neural translator.
 
@@ -132,88 +92,72 @@ Rules:
 Text:
 {text}
 """
-
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt
         )
-
         return response.text
-
     except Exception as e:
-
         return f"Translation Error: {e}"
-
 
 # =====================================================
 # IMAGE TRANSLATION
 # =====================================================
 
 def translate_image(image_path, language):
-
     text = extract_text_from_image(image_path)
+    
+    if text.startswith("Image Error:") or not text:
+        # Fallback to Gemini Multimodal if Tesseract fails or finds nothing
+        try:
+            img = Image.open(image_path)
+            prompt = f"Translate the text in this image to {language}. Return only the translated text. If there is no text, reply 'No text found in image.'"
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[img, prompt]
+            )
+            return response.text
+        except Exception as e:
+            return f"Image Fallback Error: {e}"
 
-    translated = translate_text(
-        text,
-        language
-    )
-
-    return translated
-
+    return translate_text(text, language)
 
 # =====================================================
 # PDF TRANSLATION
 # =====================================================
 
 def translate_pdf(pdf_path, language):
-
     text = extract_text_from_pdf(pdf_path)
-
-    translated = translate_text(
-        text,
-        language
-    )
-
+    if text.startswith("PDF Error:"):
+        return text
+    if not text:
+        return "No text found in PDF."
+    translated = translate_text(text, language)
     return translated
-
 
 # =====================================================
 # VOICE TRANSLATION
 # =====================================================
 
 def translate_speech(language):
-
     speech = speech_to_text()
-
-    translated = translate_text(
-        speech,
-        language
-    )
-
+    if speech.startswith("Speech Error:"):
+        return speech
+    if not speech:
+        return "No speech detected."
+    translated = translate_text(speech, language)
     return translated
-
 
 # =====================================================
 # TEXT TO SPEECH
 # =====================================================
 
 def text_to_speech(text, language_code):
-
     try:
-
-        tts = gTTS(
-            text=text,
-            lang=language_code
-        )
-
+        tts = gTTS(text=text, lang=language_code)
         audio_file = "static/output.mp3"
-
         tts.save(audio_file)
-
         return audio_file
-
     except Exception as e:
-
         print(f"TTS Error: {e}")
-
         return None

@@ -1,0 +1,18 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Pycache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Uploads and temporary data
+uploads/
+static/output.mp3
+translated_audio.mp3

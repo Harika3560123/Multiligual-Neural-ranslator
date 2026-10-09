@@ -8,3 +8,8 @@ python-dotenv
 pyaudio
 PyPDF2
 gtts
+truststore
+faiss-cpu
+langchain-community
+langchain-huggingface
+langchain-core
