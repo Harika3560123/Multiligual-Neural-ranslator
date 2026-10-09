@@ -4,23 +4,13 @@ try:
 except Exception:
     pass
 
-from rag_engine import retrieve_context
-from google import genai
-from dotenv import load_dotenv
+from deep_translator import MyMemoryTranslator, GoogleTranslator
 from PIL import Image
 from PyPDF2 import PdfReader
 from gtts import gTTS
 import speech_recognition as sr
 import pytesseract
 import os
-
-# =====================================================
-# LOAD API KEY
-# =====================================================
-
-load_dotenv()
-j = os.getenv("jyo") or os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=j)
 
 # =====================================================
 # OCR IMAGE TO TEXT
@@ -67,36 +57,20 @@ def speech_to_text():
         return f"Speech Error: {e}"
 
 # =====================================================
-# TRANSLATION FUNCTION
+# TRANSLATION FUNCTION (NO API KEY)
 # =====================================================
 
 def translate_text(text, language):
     if not text or not text.strip():
         return ""
     try:
-        context = retrieve_context(text)
-        prompt = f"""
-You are an advanced multilingual neural translator.
-
-Context:
-{context}
-
-Translate the following text into {language}.
-
-Rules:
-1. Understand context
-2. Understand idioms
-3. Preserve meaning
-4. Return only translated text
-
-Text:
-{text}
-"""
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-        return response.text
+        lang_code = language.lower()
+        try:
+            translator = MyMemoryTranslator(source='english', target=lang_code)
+            return translator.translate(text)
+        except Exception:
+            translator = GoogleTranslator(source='auto', target=lang_code)
+            return translator.translate(text)
     except Exception as e:
         return f"Translation Error: {e}"
 
@@ -108,17 +82,7 @@ def translate_image(image_path, language):
     text = extract_text_from_image(image_path)
     
     if text.startswith("Image Error:") or not text:
-        # Fallback to Gemini Multimodal if Tesseract fails or finds nothing
-        try:
-            img = Image.open(image_path)
-            prompt = f"Translate the text in this image to {language}. Return only the translated text. If there is no text, reply 'No text found in image.'"
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=[img, prompt]
-            )
-            return response.text
-        except Exception as e:
-            return f"Image Fallback Error: {e}"
+        return "Image Error: Tesseract OCR is not installed or no text was found. (Multimodal fallback is disabled in no-key version)"
 
     return translate_text(text, language)
 
