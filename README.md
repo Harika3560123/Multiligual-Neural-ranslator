@@ -1,5 +1,8 @@
 # 🌐 Multilingual Neural Translator with Contextual RAG
 
+🚀 **Live Demo:** [https://multiligual-neural-ranslator.onrender.com](https://multiligual-neural-ranslator.onrender.com)
+
+
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Framework-Flask-black.svg)](https://flask.palletsprojects.com/)
 [![Gemini](https://img.shields.io/badge/Model-Gemini%202.5%20Flash-orange.svg)](https://ai.google.dev/)
